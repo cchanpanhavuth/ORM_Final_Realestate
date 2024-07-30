@@ -12,3 +12,31 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model users {
+  id       String    @id @default(uuid())
+  username String
+  email    String
+  Password String
+  list      listing[]
+}
+
+model listing {
+  id String @id @default(uuid())
+  createAt DateTime
+  updateAt DateTime
+  name        String
+  description String
+  address     String
+  regularPrice BigInt
+  discountPrince Int
+  bathrooms Int
+  bedrooms Int
+  furnished Boolean
+  parking Boolean
+  type String
+  offer Boolean
+  imageUrl String
+  userRef users @relation(fields: [userId], references: [id])
+  userId String
+}
