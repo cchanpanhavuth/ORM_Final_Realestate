@@ -1,9 +1,10 @@
 
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
+import { errorHandler } from '../utils/error.handler.js';
 
 const prisma = new PrismaClient();
-export const signup = async (req,res) =>  {
+export const signup = async (req, res , next) =>  {
     const { username, email, password} = req.body;
     try {
         // Check if the user already exists
@@ -32,8 +33,7 @@ export const signup = async (req,res) =>  {
         // Return success response
         res.status(201).json({ message: 'User created', user: newUser });
       } catch (error) {
-        console.error('Error creating user:', error.message);
-        res.status(500).json({ error: 'Internal server error' });
+        next(error);
       }
 
 };
