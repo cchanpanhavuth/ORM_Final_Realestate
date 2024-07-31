@@ -16,11 +16,9 @@ datasource db {
 model users {
   id       String    @id @default(uuid())
   username String
-  email    String 
-  Password String
-  avatar String
+  email    String  @unique
+  password String
   property      property[]
-  @@unique([email])
   @@index([email])
 }
 
