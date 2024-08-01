@@ -1,7 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import { errorHandler } from '../utils/error.handler.js';
-import primsa from '../db.js';
 import jwt from 'jsonwebtoken';
 
 const prisma = new PrismaClient();
@@ -42,12 +41,15 @@ export const signup = async (req, res , next) =>  {
 export const signin = async (req, res, next) => {
   const {email, password} = req.body;
   try{
-      const validUser= await primsa.user.findOne({  where: {email}})
+      const validUser= await prisma.users.findFirst({  where: {email}})
+      
       if(!validUser)return next(errorHandler(404, 'User not found'))
       const validPassowrd = bcrypt.compareSync(password, validUser.password);
+      
       if(!validPassowrd) return next(errorHandler(401, 'Wrong credentials'));
       const token = jwt.sign({ id: validUser.id }, process.env.JWT_SECRET )
-      const {password: pass, ...others} = validUser.dataValues;
+      
+      const {password: pass, ...others} = validUser;
       res.cookie('token', token, {httpOnly: true
           // add cookie expire
           // , expires: new Date(Date.now() + 1000 * 60 * 60 * 24)
