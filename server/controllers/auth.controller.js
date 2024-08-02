@@ -63,6 +63,40 @@ export const signin = async (req, res, next) => {
 
 }
 
+export const google = async (req, res, next) => {
+  try{
+    const user = await prisma.users.findFirst({  where: {email: req.body.email}})
+    
+    if (user){
+      const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET )
+      const {password: pass, ...others} = user;
+      res.cookie('token', token, {httpOnly: true})
+          .status(200)
+          .json(others);
+    } else {
+      const genPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8)
+      const hashPassword = bcrypt.hashSync(genPassword, 10)
+      const newUser = await prisma.users.create({
+        data: {
+          username: req.body.name.split(' ').join('').toLowerCase() + Math.random().toString(36).slice(-4),
+          email: req.body.email,
+          password: hashPassword,
+          avatar: req.body.photo
+        }
+      })
+      const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET )
+        const {password: pass, ...others} = newUser;
+        res.cookie('token', token, {httpOnly: true})
+            .status(200)
+            .json(others)
+      
+    }
+
+    }catch(error){
+      next(error)
+    }
+}
+
 
 
 
