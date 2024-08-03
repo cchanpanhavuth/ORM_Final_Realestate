@@ -4,6 +4,6 @@ import { verifyUser } from '../utils/verifyUser.js';
 const router = express.Router();
 
 router.get('/test', test);
-router.post('/update/:id',verifyUser, updateUser)
+router.patch('/update/:id',verifyUser, updateUser)
 
 export default router;
