@@ -30,12 +30,12 @@ model listing {
   name        String
   description String
   regularPrice BigInt
-  discountPrince Int 
+  discountPrice Int 
   offer Boolean
   type String 
   propertyRef property @relation(fields: [propertyId], references: [id])
   propertyId String @unique
-  istingType   listing_type @relation(fields: [listingTypeId], references: [id])
+  listingType   listing_type @relation(fields: [listingTypeId], references: [id])
   listingTypeId String
 }
 
