@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useRef } from 'react'
 import {getDownloadURL, getStorage, ref, uploadBytesResumable} from 'firebase/storage'
 import { app } from '../firebase'
 import { updateUserStart, updateUserSuccess, updateUserFailure, deleteUserStart, deleteUserSuccess, deleteUserFailure, signOutUserStart, signOutUserSuccess, signOutUserFailure } from '../redux/user/userSlice'
-import { useDispatch } from 'react-redux'
-
+import { useDispatch } from 'react-redux';
+import { Link } from 'react-router-dom';
 //firebase storage rules
 // service firebase.storage {
 //   match /b/{bucket}/o {
@@ -33,7 +33,7 @@ export default function Profile() {
     if(file){
       handleFileUpload(file)
     }
-  }, [file])
+  }, [file]);
   
   const handleFileUpload = (file) => {
     const storage = getStorage(app)
@@ -150,6 +150,11 @@ export default function Profile() {
         <input type="password" placeholder= "password" id='password' className= "border p-3 rounded-lg"/>
         
         <button disabled={loading} className='bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80'>{loading ? 'Loading...' : 'Update'}</button>
+        <Link
+          className='bg-green-700 text-white p-3 rounded-lg uppercase text-center hover:opacity-95'
+          to={'/create-listing'}>
+          Create Listing
+        </Link>
       
       </form>
       
