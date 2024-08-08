@@ -29,7 +29,7 @@ model listing {
   updateAt DateTime
   name        String
   description String
-  regularPrice BigInt
+  regularPrice Int
   discountPrice Int 
   offer Boolean
   type String 
