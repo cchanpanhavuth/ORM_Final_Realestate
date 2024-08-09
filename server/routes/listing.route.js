@@ -5,9 +5,9 @@ import { verifyUser } from '../utils/verifyUser.js';
 const router = express.Router();
 
 
-router.get('/views', getAllListing);
+router.get('/views',verifyUser,  getAllListing);
 
-router.post('/create', createListing);
+router.post('/create', verifyUser, createListing);
 
 export default router;
 
