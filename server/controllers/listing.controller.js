@@ -24,16 +24,35 @@ export const createListing = async (req, res, next) => {
       regularPrice,
       discountPrice,
       offer,
-      type,
+      bathrooms,
+      bedrooms,
+      furnished,
+      parking,
+      address,
+      imageUrl,
+      userId,
+      listingTypeId,
+
     } = req.body;
-    const createdListing = await prisma.listing.create({
+    const createdListing = await prisma.property.create({
       data: {
-        name,
-        description,
-        regularPrice,
-        discountPrice,
-        offer,
-        type,
+        bathrooms,
+        bedrooms,
+        furnished,
+        parking,
+        address,
+        imageUrl,
+        userId,
+        listing:{
+          create:{
+            name,
+            description,
+            regularPrice,
+            discountPrice,
+            offer,
+            listingTypeId,
+          }
+        }
       },
     });
 
