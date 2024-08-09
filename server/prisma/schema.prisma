@@ -25,7 +25,7 @@ model users {
 
 model listing {
   id String @id @default(uuid())
-  createAt DateTime
+  createAt DateTime @default(now())
   updateAt DateTime
   name        String
   description String
