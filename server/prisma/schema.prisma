@@ -26,13 +26,14 @@ model users {
 model listing {
   id String @id @default(uuid())
   createAt DateTime @default(now())
-  updateAt DateTime
+  updateAt DateTime @updatedAt
   name        String
   description String
   regularPrice Int
   discountPrice Int 
-  offer Boolean
-  type String 
+  offer Boolean 
+  sell Boolean 
+  rent Boolean 
   propertyRef property @relation(fields: [propertyId], references: [id])
   propertyId String @unique
   listingType   listing_type @relation(fields: [listingTypeId], references: [id])
@@ -41,6 +42,7 @@ model listing {
 
 model listing_type {
   id String @id @default(uuid())
+  name        String
   description String
   listings    listing[]
 }
