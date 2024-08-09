@@ -16,15 +16,14 @@ export const getAllListing = async (req, res, next) => {
   }
 };
 
-
 export const createListing = async (req, res, next) => {
   try {
-    const { 
-      name, 
-      description, 
-      regularPrice, 
-      discountPrice, 
-      offer, 
+    const {
+      name,
+      description,
+      regularPrice,
+      discountPrice,
+      offer,
       type,
     } = req.body;
     const createdListing = await prisma.listing.create({
@@ -43,8 +42,6 @@ export const createListing = async (req, res, next) => {
     next(error);
   }
 };
-
-
 
 
 
