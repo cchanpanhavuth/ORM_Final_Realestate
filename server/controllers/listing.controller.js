@@ -29,6 +29,8 @@ export const createListing = async (req, res, next) => {
       furnished,
       parking,
       address,
+      rent,
+      sell,
       imageUrl,
       userId,
       listingTypeId,
@@ -43,13 +45,15 @@ export const createListing = async (req, res, next) => {
         address,
         imageUrl,
         userId,
-        listing:{
-          create:{
+        listing: {
+          create: {
             name,
             description,
             regularPrice,
             discountPrice,
             offer,
+            rent,
+            sell,
             listingTypeId,
           }
         }
