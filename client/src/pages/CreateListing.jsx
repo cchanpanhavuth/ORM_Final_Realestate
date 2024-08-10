@@ -15,11 +15,11 @@ export default function CreateListing() {
 
   const [files, setFiles] = useState([]);
   const [formData, setFormData] = useState({
-    imageUrls: [],
+    imageUrl: [],
     name: '',
     description: '',
     address: '',
-    type: 'rent',
+    type: '',
     bedrooms: 1,
     bathrooms: 1,
     regularPrice: 50,
@@ -35,7 +35,7 @@ export default function CreateListing() {
   const [loading, setLoading] = useState(false);
 
   const handleImageSubmit = () => {
-    if (files.length > 0 && files.length + formData.imageUrls.length <= 6) {
+    if (files.length > 0 && files.length + formData.imageUrl.length <= 6) {
       setUploading(true);
       setImageUploadError(null);
 
@@ -45,7 +45,7 @@ export default function CreateListing() {
         .then((urls) => {
           setFormData((prev) => ({
             ...prev,
-            imageUrls: [...prev.imageUrls, ...urls],
+            imageUrl: [...prev.imageUrl, ...urls],
           }));
           setUploading(false);
         })
@@ -86,7 +86,7 @@ export default function CreateListing() {
   const handleRemoveImage = (index) => {
     setFormData((prev) => ({
       ...prev,
-      imageUrls: prev.imageUrls.filter((_, i) => i !== index),
+      imageUrl: prev.imageUrl.filter((_, i) => i !== index),
     }));
   };
 
@@ -114,7 +114,7 @@ export default function CreateListing() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (formData.imageUrls.length < 1) {
+    if (formData.imageUrl.length < 1) {
       setError('You must upload at least one image');
       return;
     }
@@ -135,7 +135,7 @@ export default function CreateListing() {
         },
         body: JSON.stringify({
           ...formData,
-          userRef: currentUser._id,
+          userId: currentUser._id,
         }),
       });
 
@@ -335,8 +335,8 @@ export default function CreateListing() {
           {imageUploadError && (
             <p className='text-red-700 text-sm'>{imageUploadError}</p>
           )}
-          {formData.imageUrls.length > 0 &&
-            formData.imageUrls.map((url, index) => (
+          {formData.imageUrl.length > 0 &&
+            formData.imageUrl.map((url, index) => (
               <div
                 key={url}
                 className='flex justify-between p-3 border items-center'
