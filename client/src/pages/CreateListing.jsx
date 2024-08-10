@@ -14,7 +14,6 @@ export default function CreateListing() {
   const navigate = useNavigate();
   const [types, setTypes] = useState([]);
   useEffect(() => {
-    // Fetch roles from the API
     const fetchTypes = async () => {
       try {
         const response = await fetch('/api/listing/type');
@@ -33,7 +32,7 @@ export default function CreateListing() {
     name: '',
     description: '',
     address: '',
-    rent: '',
+    rent: false,
     sell: false,
     type: false,
     bedrooms: 1,
@@ -55,7 +54,7 @@ export default function CreateListing() {
     if (files.length > 0 && files.length + formData.imageUrl.length <= 6) {
       setUploading(true);
       setImageUploadError(null);
-
+      
       const uploadPromises = files.map((file) => storeImage(file));
 
       Promise.all(uploadPromises)
@@ -119,11 +118,6 @@ export default function CreateListing() {
       setFormData((prev) => ({
         ...prev,
         [id]: checked,
-      }));
-    } else if (id === 'bedrooms' || id === 'bathrooms') {
-      setFormData((prev) => ({
-        ...prev,
-        [id]: Math.max(1, parseInt(value, 10) || 1),
       }));
     } else {
       setFormData((prev) => ({
@@ -194,7 +188,7 @@ export default function CreateListing() {
             value={formData.name}
           />
           <label htmlFor="type">Listing Type:</label>
-          <select id="type" value={formData.listingTypeId} onChange={handleChange}>
+          <select id="listingTypeId" value={formData.listingTypeId} onChange={handleChange}>
             <option value="" disabled>Select a Type</option>
             {types.map((type) => (
               <option key={type.id} value={type.id}>

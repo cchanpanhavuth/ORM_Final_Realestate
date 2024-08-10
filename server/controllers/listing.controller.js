@@ -36,6 +36,9 @@ export const createListing = async (req, res, next) => {
       listingTypeId,
 
     } = req.body;
+
+    const imageUrlsArray = Array.isArray(imageUrl) ? imageUrl : [imageUrl];
+    
     const createdListing = await prisma.property.create({
       data: {
         bathrooms,
