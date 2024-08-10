@@ -66,6 +66,16 @@ export const createListing = async (req, res, next) => {
   }
 };
 
-
+export const getListingType = async (req, res, next) => {
+  try {
+    const listing_type = await prisma.listing_type.findMany();
+    if (!listing_type) {
+      return next(errorHandler(404, 'Listing Type not found!'));
+    }
+    res.status(200).json(listing_type);
+  } catch (error) {
+    next(error);
+  }
+};
 
 

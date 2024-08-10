@@ -6,9 +6,7 @@ const router = express.Router();
 
 
 router.get('/views',verifyUser,  getAllListing);
-
 router.get('/type',  getListingType);
-
 router.post('/create', verifyUser, createListing);
 
 export default router;

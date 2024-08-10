@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   getDownloadURL,
   getStorage,
@@ -12,6 +12,20 @@ import { useNavigate } from 'react-router-dom';
 export default function CreateListing() {
   const { currentUser } = useSelector((state) => state.user);
   const navigate = useNavigate();
+  const [types, setTypes] = useState([]);
+  useEffect(() => {
+    // Fetch roles from the API
+    const fetchTypes = async () => {
+      try {
+        const response = await fetch('/api/listing/type');
+        const data = await response.json();
+        setTypes(data);
+      } catch (error) {
+        console.error('Error fetching Type:', error);
+      }
+    };
+    fetchTypes();
+  }, []);
 
   const [files, setFiles] = useState([]);
   const [formData, setFormData] = useState({
@@ -29,6 +43,7 @@ export default function CreateListing() {
     offer: false,
     parking: false,
     furnished: false,
+    listingTypeId: '',
   });
 
   const [imageUploadError, setImageUploadError] = useState(null);
@@ -173,6 +188,15 @@ export default function CreateListing() {
             onChange={handleChange}
             value={formData.name}
           />
+          <label htmlFor="type">Listing Type:</label>
+          <select id="type" value={formData.listingTypeId} onChange={handleChange}>
+              <option value="" disabled>Select a Type</option>
+              {types.map((type) => (
+                <option key={type.id} value={type.id}>
+                  {type.name}
+                </option>
+              ))}
+            </select>
           <textarea
             placeholder='Description'
             className='border p-3 rounded-lg'
