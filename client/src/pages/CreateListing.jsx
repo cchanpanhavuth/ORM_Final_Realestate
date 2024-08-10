@@ -120,6 +120,11 @@ export default function CreateListing() {
         ...prev,
         [id]: checked,
       }));
+    } else if (id === 'bedrooms' || id === 'bathrooms') {
+      setFormData((prev) => ({
+        ...prev,
+        [id]: Math.max(1, parseInt(value, 10) || 1),
+      }));
     } else {
       setFormData((prev) => ({
         ...prev,
@@ -152,7 +157,7 @@ export default function CreateListing() {
         },
         body: JSON.stringify({
           ...formData,
-          userId: currentUser._id,
+          userId: currentUser.id,
         }),
       });
 
@@ -190,13 +195,13 @@ export default function CreateListing() {
           />
           <label htmlFor="type">Listing Type:</label>
           <select id="type" value={formData.listingTypeId} onChange={handleChange}>
-              <option value="" disabled>Select a Type</option>
-              {types.map((type) => (
-                <option key={type.id} value={type.id}>
-                  {type.name}
-                </option>
-              ))}
-            </select>
+            <option value="" disabled>Select a Type</option>
+            {types.map((type) => (
+              <option key={type.id} value={type.id}>
+                {type.name}
+              </option>
+            ))}
+          </select>
           <textarea
             placeholder='Description'
             className='border p-3 rounded-lg'
