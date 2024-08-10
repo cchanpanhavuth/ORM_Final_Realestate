@@ -54,7 +54,7 @@ model property {
   furnished Boolean
   parking Boolean
   address     String
-  imageUrl String
+  imageUrl String[]
   userRef users @relation(fields: [userId], references: [id])
   userId String
   listing listing? 
