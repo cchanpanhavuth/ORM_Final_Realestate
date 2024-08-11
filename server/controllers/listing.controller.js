@@ -177,6 +177,9 @@ export const getListing = async (req, res, next) => {
   try {
     const listing = await prisma.property.findUnique({
       where: { id: req.params.id },
+      include: {
+        listing: true,  // Include the related Property data
+      },
     });
 
     if (!listing) {

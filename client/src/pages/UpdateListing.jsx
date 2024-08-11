@@ -42,19 +42,28 @@ export default function CreateListing() {
         const propertyId = params.propertyId;
         const res = await fetch(`/api/listing/getListing/${propertyId}`);
         const data = await res.json();
-
+  
         if (!res.ok) {
           setError(data.message || 'Failed to fetch the listing');
           return;
         }
-        setFormData(data);
+  
+        // Merge all fields from property and listing into formData
+        const combinedData = {
+          ...data,           // Spread property fields
+          ...data.listing,   // Spread listing fields
+          imageUrl: data.imageUrl || [],  // Ensure imageUrl is an array
+        };
+  
+        setFormData(combinedData);
       } catch (error) {
         setError('Something went wrong. Please try again.');
       }
     };
-
+  
     fetchListing();
   }, [params.propertyId]);
+  
 
   const handleImageSubmit = (e) => {
     if (files.length > 0 && files.length + formData.imageUrl.length < 7) {
