@@ -38,17 +38,23 @@ export default function CreateListing() {
 
   useEffect(() => {
     const fetchListing = async () => {
-      const listingId = params.listingId;
-      const res = await fetch(`/api/listing/get/${listingId}`);
-      const data = await res.json();
-      if (data.success === false) {
-        return;
+      try {
+        const propertyId = params.propertyId;
+        const res = await fetch(`/api/listing/getListing/${propertyId}`);
+        const data = await res.json();
+
+        if (!res.ok) {
+          setError(data.message || 'Failed to fetch the listing');
+          return;
+        }
+        setFormData(data);
+      } catch (error) {
+        setError('Something went wrong. Please try again.');
       }
-      setFormData(data);
     };
 
     fetchListing();
-  }, [params.listingId]);
+  }, [params.propertyId]);
 
   const handleImageSubmit = (e) => {
     if (files.length > 0 && files.length + formData.imageUrl.length < 7) {
@@ -57,19 +63,27 @@ export default function CreateListing() {
       const promises = [];
 
       for (let i = 0; i < files.length; i++) {
+        // Check file size before uploading
+        if (files[i].size > 2 * 1024 * 1024) {
+          setImageUploadError('Each image must be less than 2 MB');
+          setUploading(false);
+          return;
+        }
+
         promises.push(storeImage(files[i]));
       }
+
       Promise.all(promises)
         .then((urls) => {
-          setFormData({
-            ...formData,
-            imageUrls: formData.imageUrl.concat(urls),
-          });
+          setFormData((prevData) => ({
+            ...prevData,
+            imageUrl: prevData.imageUrl.concat(urls),
+          }));
           setImageUploadError(false);
           setUploading(false);
         })
-        .catch((err) => {
-          setImageUploadError('Image upload failed (2 mb max per image)');
+        .catch(() => {
+          setImageUploadError('Image upload failed');
           setUploading(false);
         });
     } else {
@@ -104,73 +118,61 @@ export default function CreateListing() {
   };
 
   const handleRemoveImage = (index) => {
-    setFormData({
-      ...formData,
-      imageUrls: formData.imageUrl.filter((_, i) => i !== index),
-    });
+    setFormData((prevData) => ({
+      ...prevData,
+      imageUrl: prevData.imageUrl.filter((_, i) => i !== index),
+    }));
   };
 
   const handleChange = (e) => {
-    if (e.target.id === 'sale' || e.target.id === 'rent') {
-      setFormData({
-        ...formData,
-        type: e.target.id,
-      });
-    }
+    const { id, value, type, checked } = e.target;
 
-    if (
-      e.target.id === 'parking' ||
-      e.target.id === 'furnished' ||
-      e.target.id === 'offer'
-    ) {
-      setFormData({
-        ...formData,
-        [e.target.id]: e.target.checked,
-      });
-    }
-
-    if (
-      e.target.type === 'number' ||
-      e.target.type === 'text' ||
-      e.target.type === 'textarea'
-    ) {
-      setFormData({
-        ...formData,
-        [e.target.id]: e.target.value,
-      });
-    }
+    setFormData((prevData) => ({
+      ...prevData,
+      [id]: type === 'checkbox' ? checked : value,
+      type: id === 'sale' || id === 'rent' ? id : prevData.type,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (formData.imageUrl.length < 1) {
+      return setError('You must upload at least one image');
+    }
+    if (+formData.regularPrice < +formData.discountPrice) {
+      return setError('Discount price must be lower than regular price');
+    }
+
     try {
-      if (formData.imageUrl.length < 1)
-        return setError('You must upload at least one image');
-      if (+formData.regularPrice < +formData.discountPrice)
-        return setError('Discount price must be lower than regular price');
       setLoading(true);
-      setError(false);
-      const res = await fetch(`/api/listing/update/${params.listingId}`, {
-        method: 'POST',
+      setError(null);
+
+      const res = await fetch(`/api/listing/update/${params.propertyId}`, {
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           ...formData,
-          userRef: currentUser.id,
+          userId: currentUser.id,
         }),
       });
+
       const data = await res.json();
       setLoading(false);
-      if (data.success === false) {
-        setError(data.message);
+
+      if (!res.ok) {
+        return setError(data.message || 'Failed to update listing');
       }
+
       navigate(`/listing/${data.id}`);
     } catch (error) {
-      setError(error.message);
+      setError(error.message || 'Something went wrong. Please try again.');
       setLoading(false);
     }
   };
+
   return (
     <main className='p-3 max-w-4xl mx-auto'>
       <h1 className='text-3xl font-semibold text-center my-7'>
@@ -348,7 +350,7 @@ export default function CreateListing() {
               onClick={handleImageSubmit}
               className='p-3 text-green-700 border border-green-700 rounded uppercase hover:shadow-lg disabled:opacity-80'
             >
-              {uploading ? 'Uploading...' : 'Upload'}
+              {uploading ? 'Uploading...' : 'Upload Images'}
             </button>
           </div>
           <p className='text-red-700 text-sm'>

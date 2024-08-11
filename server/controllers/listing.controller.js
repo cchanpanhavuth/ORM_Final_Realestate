@@ -176,49 +176,43 @@ export const getListings = async (req, res, next) => {
   try {
     const limit = parseInt(req.query.limit) || 9;
     const startIndex = parseInt(req.query.startIndex) || 0;
-    let offer = req.query.offer;
 
-    if (offer === undefined || offer === 'false') {
-      offer = { $in: [false, true] };
-    }
-
-    let furnished = req.query.furnished;
-
-    if (furnished === undefined || furnished === 'false') {
-      furnished = { $in: [false, true] };
-    }
-
-    let parking = req.query.parking;
-
-    if (parking === undefined || parking === 'false') {
-      parking = { $in: [false, true] };
-    }
-
-    let type = req.query.type;
-
-    if (type === undefined || type === 'all') {
-      type = { $in: ['sale', 'rent'] };
-    }
+    // Parse query parameters
+    const offer = req.query.offer === 'true';
+    const furnished = req.query.furnished === 'true';
+    const parking = req.query.parking === 'true';
+    const type = req.query.type;
 
     const searchTerm = req.query.searchTerm || '';
+    const sort = req.query.sort || 'createAt';
+    const order = req.query.order === 'asc' ? 'asc' : 'desc';
 
-    const sort = req.query.sort || 'createdAt';
+    // Construct filter object
+    const filter = {
+      offer: req.query.offer !== undefined ? offer : undefined,
+      furnished: req.query.furnished !== undefined ? furnished : undefined,
+      parking: req.query.parking !== undefined ? parking : undefined,
+      type: type !== 'all' ? type : undefined,
+      OR: [
+        { name: { contains: searchTerm, mode: 'insensitive' } },
+        { description: { contains: searchTerm, mode: 'insensitive' } },
+      ],
+    };
 
-    const order = req.query.order || 'desc';
+    // Remove undefined filters
+    Object.keys(filter).forEach((key) => filter[key] === undefined && delete filter[key]);
 
-    const listing = await listing.findMany({
-      name: { $regex: searchTerm, $options: 'i' },
-      offer,
-      furnished,
-      parking,
-      type,
-    })
-      .sort({ [sort]: order })
-      .limit(limit)
-      .skip(startIndex);
+    // Fetch listings with applied filters, sorting, and pagination
+    const listings = await prisma.listing.findMany({
+      where: filter,
+      orderBy: { [sort]: order },
+      skip: startIndex,
+      take: limit,
+    });
 
-    return res.status(200).json(listing);
+    return res.status(200).json(listings);
   } catch (error) {
     next(error);
   }
 };
+
