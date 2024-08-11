@@ -141,9 +141,9 @@ export default function Profile() {
     }
   };
 
-  const handleListingDelete = async (listingId) => {
+  const handlePropertyDelete = async (propertyId) => {
     try {
-      const res = await fetch(`/api/listing/delete/${listingId}`, {
+      const res = await fetch(`/api/listing/delete/${propertyId}`, {
         method: 'DELETE',
       });
       const data = await res.json();
@@ -153,7 +153,7 @@ export default function Profile() {
       }
 
       setUserPropertys((prev) =>
-        prev.filter((property) => property.id !== listingId) 
+        prev.filter((property) => property.id !== propertyId)
       );
     } catch (error) {
       console.log(error.message);
@@ -235,12 +235,12 @@ export default function Profile() {
 
               <div className='flex flex-col item-center'>
                 <button
-                   onClick={() => handleListingDelete(property.id)}
+                  onClick={() => handlePropertyDelete(property.id)}
                   className='text-red-700 uppercase'
                 >
                   Delete
                 </button>
-                <Link >
+                <Link to={`/update-property/${property.id}`}>
                   <button className='text-green-700 uppercase'>Edit</button>
                 </Link>
               </div>

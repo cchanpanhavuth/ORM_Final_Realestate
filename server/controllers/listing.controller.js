@@ -103,7 +103,7 @@ export const deleteListing = async (req, res, next) => {
       },
     });
 
-    res.status(200).json('Listing has been deleted!');
+    res.status(200).json({ message: 'Listing has been deleted!' });
   } catch (error) {
     next(error);
   }
@@ -146,6 +146,7 @@ export const deleteListing = async (req, res, next) => {
 //     next(error);
 //   }
 // };
+
 
 
 
