@@ -38,7 +38,7 @@ export const createListing = async (req, res, next) => {
     } = req.body;
 
     const imageUrlsArray = Array.isArray(imageUrl) ? imageUrl : [imageUrl];
-    
+
     const createdListing = await prisma.property.create({
       data: {
         bathrooms,
@@ -109,44 +109,116 @@ export const deleteListing = async (req, res, next) => {
   }
 };
 
-// export const deleteListing = async (req, res, next) => {
-//   const { propertyId } = req.params;
 
-//   if (!propertyId) {
-//     return next(errorHandler(400, 'Property ID is required'));
-//   }
+export const updateListing = async (req, res, next) => {
+  try {
+    const {
+      name,
+      description,
+      regularPrice,
+      discountPrice,
+      offer,
+      bathrooms,
+      bedrooms,
+      furnished,
+      parking,
+      address,
+      rent,
+      sell,
+      imageUrl,
+      userId,
+      listingTypeId,
+    } = req.body;
 
-//   try {
-//     // Fetch the listing by propertyId
-//     const listings = await prisma.listing.findUnique({
-//       where: {
-//         propertyId: propertyId,
-//       },
-//     });
+    const propertyId = req.params.id; // Assuming the property ID is passed as a URL parameter
 
-//     // Check if the listing exists
-//     if (!listings) {
-//       return next(errorHandler(404, 'Listing not found!'));
-//     }
+    const imageUrlsArray = Array.isArray(imageUrl) ? imageUrl : [imageUrl];
 
-//     // Check if the user is authorized to delete the listing
-//     if (req.user.id !== listings.userId) {
-//       return next(errorHandler(401, 'You can only delete your own listings!'));
-//     }
+    // Start a transaction to update both property and listing
+    await prisma.$transaction(async (prisma) => {
+      // Update the property
+      await prisma.property.update({
+        where: { id: propertyId },
+        data: {
+          bathrooms: req.body.bathrooms,
+          bedrooms: req.body.bedrooms,
+          furnished: req.body.furnished,
+          parking: req.body.parking,
+          address: req.body.address,
+          imageUrl: req.body.imageUrl,
+          
+        },
+      });
 
-//     // Delete the listing
-//     await prisma.listing.delete({
-//       where: {
-//         propertyId: propertyId,
-//       },
-//     });
+      // Update the listing
+      await prisma.listing.update({
+        where: { propertyId },
+        data: {
+          name: req.body.name,
+          description: req.body.description,
+          regularPrice: req.body.regularPrice,
+          discountPrice: req.body.discountPrice,
+          offer: req.body.offer,
+          rent: req.body.rent,
+          sell: req.body.sell,
+          listingTypeId: req.body.listingTypeId
+        },
+      });
+    });
 
-//     res.status(200).json('Listing has been deleted!');
-//   } catch (error) {
-//     next(error);
-//   }
-// };
+    res.status(200).json({ message: 'Listing and property updated successfully!' });
+  } catch (error) {
+    next(error);
+  }
+};
 
+export const getListings = async (req, res, next) => {
+  try {
+    const limit = parseInt(req.query.limit) || 9;
+    const startIndex = parseInt(req.query.startIndex) || 0;
+    let offer = req.query.offer;
 
+    if (offer === undefined || offer === 'false') {
+      offer = { $in: [false, true] };
+    }
 
+    let furnished = req.query.furnished;
 
+    if (furnished === undefined || furnished === 'false') {
+      furnished = { $in: [false, true] };
+    }
+
+    let parking = req.query.parking;
+
+    if (parking === undefined || parking === 'false') {
+      parking = { $in: [false, true] };
+    }
+
+    let type = req.query.type;
+
+    if (type === undefined || type === 'all') {
+      type = { $in: ['sale', 'rent'] };
+    }
+
+    const searchTerm = req.query.searchTerm || '';
+
+    const sort = req.query.sort || 'createdAt';
+
+    const order = req.query.order || 'desc';
+
+    const listing = await listing.findMany({
+      name: { $regex: searchTerm, $options: 'i' },
+      offer,
+      furnished,
+      parking,
+      type,
+    })
+      .sort({ [sort]: order })
+      .limit(limit)
+      .skip(startIndex);
+
+    return res.status(200).json(listing);
+  } catch (error) {
+    next(error);
+  }
+};
