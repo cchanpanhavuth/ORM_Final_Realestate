@@ -72,20 +72,3 @@ export const getUserProperty = async (req, res, next) => {
   
 
 
-// export const getUserProperty = async (req, res, next) => {
-//     if (req.user.id === req.params.id) {
-//       try {
-//         // Use 'findMany' with the appropriate 'where' clause
-//         const propertys = await prisma.property.findUnique({
-//           where: {
-//             id: req.params.id,
-//           },
-//         });
-//         res.status(200).json(propertys);
-//       } catch (error) {
-//         next(error);
-//       }
-//     } else {
-//       return next(errorHandler(401, 'You can only view your own propertys!'));
-//     }
-//   };
