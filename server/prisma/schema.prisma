@@ -34,7 +34,7 @@ model listing {
   offer Boolean 
   sell Boolean 
   rent Boolean 
-  propertyRef property @relation(fields: [propertyId], references: [id])
+  propertyRef property @relation(fields: [propertyId], references: [id],onDelete: Cascade)
   propertyId String @unique
   listingType   listing_type @relation(fields: [listingTypeId], references: [id])
   listingTypeId String

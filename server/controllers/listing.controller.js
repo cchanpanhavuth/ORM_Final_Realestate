@@ -82,34 +82,24 @@ export const getListingType = async (req, res, next) => {
 };
 
 export const deleteListing = async (req, res, next) => {
-  const { propertyId } = req.params;
+  const listing = await prisma.property.findUnique({
+    where: {
+      id: req.params.id,
+    },
+  });
 
-  if (!propertyId) {
-    return next(errorHandler(400, 'Property ID is required'));
+  if (!listing) {
+    return next(errorHandler(404, 'Listing not found!'));
+  }
+
+  if (req.user.id !== listing.userId) {
+    return next(errorHandler(401, 'You can only delete your own listings!'));
   }
 
   try {
-    // Fetch the listing by propertyId
-    const listings = await prisma.listing.findUnique({
+    await prisma.property.delete({
       where: {
-        propertyId: propertyId,
-      },
-    });
-
-    // Check if the listing exists
-    if (!listings) {
-      return next(errorHandler(404, 'Listing not found!'));
-    }
-
-    // Check if the user is authorized to delete the listing
-    if (req.user.id !== listings.userId) {
-      return next(errorHandler(401, 'You can only delete your own listings!'));
-    }
-
-    // Delete the listing
-    await prisma.listing.delete({
-      where: {
-        propertyId: propertyId,
+        id: req.params.id,
       },
     });
 
@@ -118,6 +108,44 @@ export const deleteListing = async (req, res, next) => {
     next(error);
   }
 };
+
+// export const deleteListing = async (req, res, next) => {
+//   const { propertyId } = req.params;
+
+//   if (!propertyId) {
+//     return next(errorHandler(400, 'Property ID is required'));
+//   }
+
+//   try {
+//     // Fetch the listing by propertyId
+//     const listings = await prisma.listing.findUnique({
+//       where: {
+//         propertyId: propertyId,
+//       },
+//     });
+
+//     // Check if the listing exists
+//     if (!listings) {
+//       return next(errorHandler(404, 'Listing not found!'));
+//     }
+
+//     // Check if the user is authorized to delete the listing
+//     if (req.user.id !== listings.userId) {
+//       return next(errorHandler(401, 'You can only delete your own listings!'));
+//     }
+
+//     // Delete the listing
+//     await prisma.listing.delete({
+//       where: {
+//         propertyId: propertyId,
+//       },
+//     });
+
+//     res.status(200).json('Listing has been deleted!');
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
 
 
