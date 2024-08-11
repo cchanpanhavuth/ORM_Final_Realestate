@@ -49,20 +49,43 @@ export const deleteUser = async (req, res, next) => {
     }
 }
 
-export const getUserListings = async (req, res, next) => {
+export const getUserProperty = async (req, res, next) => {
     if (req.user.id === req.params.id) {
       try {
-        // Use 'findMany' with the appropriate 'where' clause
-        const listings = await prisma.listing.findMany({
-          where: {
-            id: req.params.id,
-          },
+        // Use 'findUnique' for a single property
+        const property = await prisma.property.findMany({
+          where: { userId: req.params.id },
         });
-        res.status(200).json(listings);
+  
+        if (!property) {
+          return next(errorHandler(404, 'Property not found'));
+        }
+  
+        res.status(200).json(property);
       } catch (error) {
         next(error);
       }
     } else {
-      return next(errorHandler(401, 'You can only view your own listings!'));
+      return next(errorHandler(401, 'You can only view your own properties!'));
     }
   };
+  
+
+
+// export const getUserProperty = async (req, res, next) => {
+//     if (req.user.id === req.params.id) {
+//       try {
+//         // Use 'findMany' with the appropriate 'where' clause
+//         const propertys = await prisma.property.findUnique({
+//           where: {
+//             id: req.params.id,
+//           },
+//         });
+//         res.status(200).json(propertys);
+//       } catch (error) {
+//         next(error);
+//       }
+//     } else {
+//       return next(errorHandler(401, 'You can only view your own propertys!'));
+//     }
+//   };

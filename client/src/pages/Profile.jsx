@@ -27,8 +27,8 @@ export default function Profile() {
   const [fileUploadError, setFileUploadError] = useState(false)
   const [formData, setFormData] = useState({})
   const [updateSuccess, setUpdateSuccess] = useState(false)
-  const [showListingsError, setShowListingsError] = useState(false)
-  const [userListings, setUserListings] = useState([]);
+  const [showPropertysError, setShowPropertysError] = useState(false)
+  const [userPropertys, setUserPropertys] = useState([]);
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -126,22 +126,18 @@ export default function Profile() {
     }
   }
 
-  const handleShowListings = async () => {
+  const handleShowPropertys = async () => {
     try {
-      setShowListingsError(false);
-      const res = await fetch(`/api/user/listings/${currentUser.id}`);
-      if (!res.ok) {
-        setShowListingsError(true);
-        return;
-      }
+      setShowPropertysError(false);
+      const res = await fetch(`/api/user/property/${currentUser.id}`);
       const data = await res.json();
       if (data.success === false) {
-        setShowListingsError(true);
+        setShowPropertysError(true);
         return;
       }
-      setUserListings(data);
+      setUserPropertys(data);
     } catch (error) {
-      setShowListingsError(true);
+      setShowPropertysError(true);
     }
   };
 
@@ -188,34 +184,34 @@ export default function Profile() {
 
       <p className='text-red-700 mt-5'>{error ? error : ""}</p>
       <p className='text-green-700 mt-5'>{updateSuccess ? "User updated successfully!" : ""}</p>
-      <button onClick={handleShowListings} className='text-green-700 w-full'>
-        Show Listings
+      <button onClick={handleShowPropertys} className='text-green-700 w-full'>
+        Show Property
       </button>
       <p className='text-red-700 mt-5'>
-        {showListingsError ? 'Error showing listings' : ''}
+        {showPropertysError ? 'Error showing property' : ''}
       </p>
-      {userListings && userListings.length > 0 && (
+      {userPropertys && userPropertys.length > 0 && (
         <div className='flex flex-col gap-4'>
           <h1 className='text-center mt-7 text-2xl font-semibold'>
-            Your Listings
+            Your Property
           </h1>
-          {userListings.map((listing) => (
+          {userPropertys.map((property) => (
             <div
-              key={listing.id}
+              key={property.id}
               className='border rounded-lg p-3 flex justify-between items-center gap-4'
             >
-              <Link to={`/listing/${listing._id}`}>
+              <Link to={`/property/${property.id}`}>
                 <img
-                  src={listing.imageUrl[0]}
-                  alt='listing cover'
+                  src={property.imageUrl[0]}
+                  alt='property cover'
                   className='h-16 w-16 object-contain'
                 />
               </Link>
               <Link
                 className='text-slate-700 font-semibold  hover:underline truncate flex-1'
-                to={`/listing/${listing.id}`}
+                to={`/property/${property.id}`}
               >
-                <p>{listing.name}</p>
+                <p>{property.name}</p>
               </Link>
 
               <div className='flex flex-col item-center'>
