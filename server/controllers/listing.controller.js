@@ -84,24 +84,26 @@ export const getListingType = async (req, res, next) => {
 export const deleteListing = async (req, res, next) => {
   const { propertyId } = req.params;
 
+  // Check if propertyId is provided
   if (!propertyId) {
     return next(errorHandler(400, 'Property ID is required'));
   }
 
   try {
-    // Fetch the listing by propertyId
+    // Find the listing by propertyId
     const listings = await prisma.listing.findUnique({
       where: {
         propertyId: propertyId,
       },
     });
 
-    // Check if the listing exists
+    // If listing is not found, return an error
     if (!listings) {
       return next(errorHandler(404, 'Listing not found!'));
     }
 
-    // Check if the user is authorized to delete the listing
+    // Assuming you have the user's ID stored in req.user.id
+    // Check if the user is allowed to delete this listing
     if (req.user.id !== listings.userId) {
       return next(errorHandler(401, 'You can only delete your own listings!'));
     }
@@ -113,11 +115,12 @@ export const deleteListing = async (req, res, next) => {
       },
     });
 
-    res.status(200).json('Listing has been deleted!');
+    res.status(200).json({ message: 'Listing has been deleted!' });
   } catch (error) {
     next(error);
   }
 };
+
 
 
 

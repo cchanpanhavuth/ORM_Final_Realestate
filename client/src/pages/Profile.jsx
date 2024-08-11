@@ -141,6 +141,25 @@ export default function Profile() {
     }
   };
 
+  const handlePropertyDelete = async (propertyId) => {
+    try {
+      const res = await fetch(`/api/listing/delete/${propertyId}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (data.success === false) {
+        console.log(data.message);
+        return;
+      }
+
+      setUserPropertys((prev) =>
+        prev.filter((property) => property.id !== propertyId)
+      );
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   return (
     <div className='p-3 max-w-lg mx-auto'>
 
@@ -216,12 +235,12 @@ export default function Profile() {
 
               <div className='flex flex-col item-center'>
                 <button
-                  
+                  onClick={() => handlePropertyDelete(property.id)}
                   className='text-red-700 uppercase'
                 >
                   Delete
                 </button>
-                <Link >
+                <Link to={`/update-property/${property.id}`}>
                   <button className='text-green-700 uppercase'>Edit</button>
                 </Link>
               </div>
