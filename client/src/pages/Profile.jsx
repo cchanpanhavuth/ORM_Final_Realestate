@@ -230,7 +230,7 @@ export default function Profile() {
                 className='text-slate-700 font-semibold  hover:underline truncate flex-1'
                 to={`/property/${property.id}`}
               >
-                <p>{property.id}</p>
+                <p>{property.name}</p>
               </Link>
 
               <div className='flex flex-col item-center'>

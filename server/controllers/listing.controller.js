@@ -172,47 +172,65 @@ export const updateListing = async (req, res, next) => {
   }
 };
 
-export const getListings = async (req, res, next) => {
+
+export const getListing = async (req, res, next) => {
   try {
-    const limit = parseInt(req.query.limit) || 9;
-    const startIndex = parseInt(req.query.startIndex) || 0;
-
-    // Parse query parameters
-    const offer = req.query.offer === 'true';
-    const furnished = req.query.furnished === 'true';
-    const parking = req.query.parking === 'true';
-    const type = req.query.type;
-
-    const searchTerm = req.query.searchTerm || '';
-    const sort = req.query.sort || 'createAt';
-    const order = req.query.order === 'asc' ? 'asc' : 'desc';
-
-    // Construct filter object
-    const filter = {
-      offer: req.query.offer !== undefined ? offer : undefined,
-      furnished: req.query.furnished !== undefined ? furnished : undefined,
-      parking: req.query.parking !== undefined ? parking : undefined,
-      type: type !== 'all' ? type : undefined,
-      OR: [
-        { name: { contains: searchTerm, mode: 'insensitive' } },
-        { description: { contains: searchTerm, mode: 'insensitive' } },
-      ],
-    };
-
-    // Remove undefined filters
-    Object.keys(filter).forEach((key) => filter[key] === undefined && delete filter[key]);
-
-    // Fetch listings with applied filters, sorting, and pagination
-    const listings = await prisma.listing.findMany({
-      where: filter,
-      orderBy: { [sort]: order },
-      skip: startIndex,
-      take: limit,
+    const listing = await prisma.property.findUnique({
+      where: { id: req.params.id },
     });
 
-    return res.status(200).json(listings);
+    if (!listing) {
+      return next(errorHandler(404, 'Listing not found!'));
+    }
+
+    res.status(200).json(listing);
   } catch (error) {
     next(error);
   }
 };
+
+
+// export const getListings = async (req, res, next) => {
+//   try {
+//     const limit = parseInt(req.query.limit) || 9;
+//     const startIndex = parseInt(req.query.startIndex) || 0;
+
+//     // Parse query parameters
+//     const offer = req.query.offer === 'true';
+//     const furnished = req.query.furnished === 'true';
+//     const parking = req.query.parking === 'true';
+//     const type = req.query.type;
+
+//     const searchTerm = req.query.searchTerm || '';
+//     const sort = req.query.sort || 'createAt';
+//     const order = req.query.order === 'asc' ? 'asc' : 'desc';
+
+//     // Construct filter object
+//     const filter = {
+//       offer: req.query.offer !== undefined ? offer : undefined,
+//       furnished: req.query.furnished !== undefined ? furnished : undefined,
+//       parking: req.query.parking !== undefined ? parking : undefined,
+//       type: type !== 'all' ? type : undefined,
+//       OR: [
+//         { name: { contains: searchTerm, mode: 'insensitive' } },
+//         { description: { contains: searchTerm, mode: 'insensitive' } },
+//       ],
+//     };
+
+//     // Remove undefined filters
+//     Object.keys(filter).forEach((key) => filter[key] === undefined && delete filter[key]);
+
+//     // Fetch listings with applied filters, sorting, and pagination
+//     const listings = await prisma.listing.findMany({
+//       where: filter,
+//       orderBy: { [sort]: order },
+//       skip: startIndex,
+//       take: limit,
+//     });
+
+//     return res.status(200).json(listings);
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
