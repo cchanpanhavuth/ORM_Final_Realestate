@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "listing" ALTER COLUMN "createAt" SET DEFAULT CURRENT_TIMESTAMP;

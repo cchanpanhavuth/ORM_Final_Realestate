@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt'
 const prisma = new PrismaClient();
 
 export const test = (req,res) =>{
-    res.send('Hello Guyssss')
+    res.send('Hello Guys')
 }
 
 export const updateUser = async (req, res, next) => {
