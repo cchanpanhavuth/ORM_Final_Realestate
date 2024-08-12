@@ -187,8 +187,8 @@ export default function CreateListing() {
             onChange={handleChange}
             value={formData.name}
           />
-          <label htmlFor="type">Listing Type:</label>
-          <select id="listingTypeId" value={formData.listingTypeId} onChange={handleChange}>
+          
+          <select className='border p-3 rounded-lg' id="listingTypeId" value={formData.listingTypeId} onChange={handleChange}>
             <option value="" disabled>Select a Type</option>
             {types.map((type) => (
               <option key={type.id} value={type.id}>

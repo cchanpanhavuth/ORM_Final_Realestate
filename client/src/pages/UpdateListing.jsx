@@ -14,6 +14,19 @@ export default function CreateListing() {
   const navigate = useNavigate();
   const params = useParams();
   const [files, setFiles] = useState([]);
+  const [types, setTypes] = useState([]);
+  useEffect(() => {
+    const fetchTypes = async () => {
+      try {
+        const response = await fetch('/api/listing/type');
+        const data = await response.json();
+        setTypes(data);
+      } catch (error) {
+        console.error('Error fetching Type:', error);
+      }
+    };
+    fetchTypes();
+  }, []);
   const [formData, setFormData] = useState({
     imageUrl: [],
     name: '',
@@ -203,6 +216,14 @@ export default function CreateListing() {
             onChange={handleChange}
             value={formData.name}
           />
+          <select className='border p-3 rounded-lg' id="listingTypeId" value={formData.listingTypeId} onChange={handleChange}>
+            <option value="" disabled>Select a Type</option>
+            {types.map((type) => (
+              <option key={type.id} value={type.id}>
+                {type.name}
+              </option>
+            ))}
+          </select>
           <textarea
             type='text'
             placeholder='Description'
