@@ -63,7 +63,7 @@ export const createListing = async (req, res, next) => {
       },
     });
 
-    res.status(201).json(createdListing);
+    res.status(201).json({ message: 'Listing has been Created!' });
   } catch (error) {
     next(error);
   }

@@ -108,21 +108,21 @@ export default function CreateListing() {
 
   const handleChange = (e) => {
     const { id, value, type, checked } = e.target;
-
+  
     if (id === 'sale' || id === 'rent') {
       setFormData((prev) => ({
         ...prev,
-        type: id,
+        type: id, // Sets the 'type' field based on the id ('sale' or 'rent')
       }));
     } else if (type === 'checkbox') {
       setFormData((prev) => ({
         ...prev,
-        [id]: checked,
+        [id]: checked, // Updates the state for the checkbox with the id as the key
       }));
     } else {
       setFormData((prev) => ({
         ...prev,
-        [id]: value,
+        [id]: value, // Updates the state for other input types using the id as the key
       }));
     }
   };
@@ -216,7 +216,7 @@ export default function CreateListing() {
           <div className='flex gap-6 flex-wrap'>
             <div className='flex gap-2'>
               <input
-                type='checkbox'
+                type='radio'
                 id='sale'
                 className='w-5'
                 onChange={handleChange}
@@ -226,7 +226,7 @@ export default function CreateListing() {
             </div>
             <div className='flex gap-2'>
               <input
-                type='checkbox'
+                type='radio'
                 id='rent'
                 className='w-5'
                 onChange={handleChange}
