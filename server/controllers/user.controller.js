@@ -70,5 +70,23 @@ export const getUserProperty = async (req, res, next) => {
     }
   };
   
+  export const getUser = async (req, res, next) => {
+    try {
+      // Fetch user data by ID
+      const user = await prisma.users.findUnique({
+        where: { id: req.params.id },
+      });
+  
+      if (!user) return next(errorHandler(404, 'User not found!'));
+  
+      // Exclude the password field
+      const { password, ...rest } = user;
+  
+      res.status(200).json(rest);
+    } catch (error) {
+      next(error);
+    }
+  };
+  
 
 

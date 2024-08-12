@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore from 'swiper';
 import { Navigation } from 'swiper/modules';
+import { useSelector } from 'react-redux';
 import 'swiper/css/bundle';
 import {
   FaBath,
@@ -13,6 +14,8 @@ import {
   FaShare,
 } from 'react-icons/fa';
 
+import Contact from '../components/Contact';
+
 export default function Listing() {
   SwiperCore.use([Navigation]);
   const [property, setProperty] = useState(null);
@@ -20,20 +23,22 @@ export default function Listing() {
   const [error, setError] = useState(false);
   const [copied, setCopied] = useState(false);
   const params = useParams();
-  
+  const [contact, setContact] = useState(false);
+  const { currentUser } = useSelector((state) => state.user);
+
   useEffect(() => {
     const fetchListing = async () => {
       try {
         setLoading(true);
         const res = await fetch(`/api/listing/getListing/${params.propertyId}`);
         const data = await res.json();
-  
+
         if (!res.ok || data.success === false) {
           setError(data.message || 'Failed to fetch the listing');
           setProperty(null); // Reset property state in case of error
           return;
         }
-  
+
         // Assuming the backend returns both property and listing in a combined object
         setProperty({
           ...data,    // Spread property fields
@@ -48,10 +53,10 @@ export default function Listing() {
         setLoading(false);
       }
     };
-  
+
     fetchListing();
   }, [params.propertyId]);
-  
+
 
   return (
     <main>
@@ -141,6 +146,15 @@ export default function Listing() {
                 {property.furnished ? 'Furnished' : 'Unfurnished'}
               </li>
             </ul>
+            {currentUser && property.userId !== currentUser.id && !contact && (
+              <button
+                onClick={() => setContact(true)}
+                className='bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 p-3'
+              >
+                Contact landlord
+              </button>
+            )}
+            {contact && <Contact property={property} />}
           </div>
         </div>
       )}
