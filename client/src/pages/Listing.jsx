@@ -20,29 +20,38 @@ export default function Listing() {
   const [error, setError] = useState(false);
   const [copied, setCopied] = useState(false);
   const params = useParams();
-
+  
   useEffect(() => {
     const fetchListing = async () => {
       try {
         setLoading(true);
         const res = await fetch(`/api/listing/getListing/${params.propertyId}`);
         const data = await res.json();
-        if (data.success === false) {
-          setError(true);
-        } else {
-          setProperty(data);
-          setError(false);
+  
+        if (!res.ok || data.success === false) {
+          setError(data.message || 'Failed to fetch the listing');
+          setProperty(null); // Reset property state in case of error
+          return;
         }
+  
+        // Assuming the backend returns both property and listing in a combined object
+        setProperty({
+          ...data,    // Spread property fields
+          ...data.listing,     // Spread listing fields
+          imageUrl: data.imageUrl || [], // Ensure imageUrl is an array
+        });
+        setError(false);
       } catch (err) {
         console.error('Error fetching property:', err); // Log the error
-        setError(true);
+        setError('Something went wrong. Please try again.');
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchListing();
   }, [params.propertyId]);
+  
 
   return (
     <main>
