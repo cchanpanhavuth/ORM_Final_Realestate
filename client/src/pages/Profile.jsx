@@ -136,6 +136,7 @@ export default function Profile() {
         return;
       }
       setUserPropertys(data);
+     
     } catch (error) {
       setShowPropertysError(true);
     }
@@ -230,7 +231,7 @@ export default function Profile() {
                 className='text-slate-700 font-semibold  hover:underline truncate flex-1'
                 to={`/property/${property.id}`}
               >
-                <p>{property.name}</p>
+                <p>{property.listing.name}</p>
               </Link>
 
               <div className='flex flex-col item-center'>

@@ -1,16 +1,73 @@
+// import { Link } from 'react-router-dom';
+// import { MdLocationOn } from 'react-icons/md';
+
+// export default function ListingItem({ property}) {
+//   return (
+//     <div className='bg-white shadow-md hover:shadow-lg transition-shadow overflow-hidden rounded-lg w-full sm:w-[330px]'>
+//       <Link to={`/listing/${property.id}`}>
+//         <img
+//           src={
+//             property.imageUrl[0] ||
+//             'https://53.fs1.hubspotusercontent-na1.net/hub/53/hubfs/Sales_Blog/real-estate-business-compressor.jpg?width=595&height=400&name=real-estate-business-compressor.jpg'
+//           }
+//           alt='property cover'
+//           className='h-[320px] sm:h-[220px] w-full object-cover hover:scale-105 transition-scale duration-300'
+//         />
+//         <div className='p-3 flex flex-col gap-2 w-full'>
+//           <p className='truncate text-lg font-semibold text-slate-700'>
+//             {property.name}
+//           </p>
+//           <div className='flex items-center gap-1'>
+//             <MdLocationOn className='h-4 w-4 text-green-700' />
+//             <p className='text-sm text-gray-600 truncate w-full'>
+//               {property.address}
+//             </p>
+//           </div>
+//           <p className='text-sm text-gray-600 line-clamp-2'>
+//             {property.description}
+//           </p>
+//           <p className='text-slate-500 mt-2 font-semibold '>
+//             $
+//             {property.offer
+//               ? property.discountPrice.toLocaleString('en-US')
+//               : property.regularPrice.toLocaleString('en-US')}
+//             {property.type === 'rent' && ' / month'}
+//           </p>
+//           <div className='text-slate-700 flex gap-4'>
+//             <div className='font-bold text-xs'>
+//               {property.bedrooms > 1
+//                 ? `${property.bedrooms} beds `
+//                 : `${property.bedrooms} bed `}
+//             </div>
+//             <div className='font-bold text-xs'>
+//               {property.bathrooms > 1
+//                 ? `${property.bathrooms} baths `
+//                 : `${property.bathrooms} bath `}
+//             </div>
+//           </div>
+//         </div>
+//       </Link>
+//     </div>
+//   );
+// }
+
 import { Link } from 'react-router-dom';
 import { MdLocationOn } from 'react-icons/md';
 
-export default function ListingItem({ listing }) {
+export default function ListingItem({ property }) {
+  const { listing, ...propertyDetails } = property;
+
+  if (!listing) return null; // Ensure listing exists before rendering
+
   return (
     <div className='bg-white shadow-md hover:shadow-lg transition-shadow overflow-hidden rounded-lg w-full sm:w-[330px]'>
-      <Link to={`/listing/${listing._id}`}>
+      <Link to={`/property/${propertyDetails.id}`}>
         <img
           src={
-            listing.imageUrl[0] ||
+            propertyDetails.imageUrl[0] ||
             'https://53.fs1.hubspotusercontent-na1.net/hub/53/hubfs/Sales_Blog/real-estate-business-compressor.jpg?width=595&height=400&name=real-estate-business-compressor.jpg'
           }
-          alt='listing cover'
+          alt='property cover'
           className='h-[320px] sm:h-[220px] w-full object-cover hover:scale-105 transition-scale duration-300'
         />
         <div className='p-3 flex flex-col gap-2 w-full'>
@@ -20,7 +77,7 @@ export default function ListingItem({ listing }) {
           <div className='flex items-center gap-1'>
             <MdLocationOn className='h-4 w-4 text-green-700' />
             <p className='text-sm text-gray-600 truncate w-full'>
-              {listing.address}
+              {propertyDetails.address}
             </p>
           </div>
           <p className='text-sm text-gray-600 line-clamp-2'>
@@ -31,18 +88,18 @@ export default function ListingItem({ listing }) {
             {listing.offer
               ? listing.discountPrice.toLocaleString('en-US')
               : listing.regularPrice.toLocaleString('en-US')}
-            {listing.type === 'rent' && ' / month'}
+            {listing.rent && ' / month'}
           </p>
           <div className='text-slate-700 flex gap-4'>
             <div className='font-bold text-xs'>
-              {listing.bedrooms > 1
-                ? `${listing.bedrooms} beds `
-                : `${listing.bedrooms} bed `}
+              {propertyDetails.bedrooms > 1
+                ? `${propertyDetails.bedrooms} beds `
+                : `${propertyDetails.bedrooms} bed `}
             </div>
             <div className='font-bold text-xs'>
-              {listing.bathrooms > 1
-                ? `${listing.bathrooms} baths `
-                : `${listing.bathrooms} bath `}
+              {propertyDetails.bathrooms > 1
+                ? `${propertyDetails.bathrooms} baths `
+                : `${propertyDetails.bathrooms} bath `}
             </div>
           </div>
         </div>

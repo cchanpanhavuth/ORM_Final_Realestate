@@ -55,6 +55,9 @@ export const getUserProperty = async (req, res, next) => {
         // Use 'findUnique' for a single property
         const property = await prisma.property.findMany({
           where: { userId: req.params.id },
+          include: {
+            listing: true,  // Include the related Property data
+          },
         });
   
         if (!property) {

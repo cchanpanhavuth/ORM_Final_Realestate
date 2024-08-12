@@ -169,18 +169,21 @@ export default function CreateListing() {
       });
 
       const data = await res.json();
+      console.log(data.id)
       setLoading(false);
 
       if (!res.ok) {
         return setError(data.message || 'Failed to update listing');
       }
-
-      navigate(`/listing/${data.id}`);
+      navigate(`/property/${data.property.id}`);
     } catch (error) {
       setError(error.message || 'Something went wrong. Please try again.');
       setLoading(false);
     }
+    
   };
+  
+ 
 
   return (
     <main className='p-3 max-w-4xl mx-auto'>

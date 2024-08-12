@@ -11,7 +11,7 @@ export default function Search() {
         parking: false,
         furnished: false,
         offer: false,
-        sort: 'created_at',
+        sort: 'createAt',
         order: 'desc',
     });
 
