@@ -68,7 +68,7 @@ export default function Search() {
     }, [location.search]);
 
     const handleChange = (e) => {
-        const { id, type, value, checked } = e.target;
+        const { id, value, checked } = e.target;
 
         if (id === 'all' || id === 'rent' || id === 'sale') {
             setSidebardata({ ...sidebardata, type: id });
