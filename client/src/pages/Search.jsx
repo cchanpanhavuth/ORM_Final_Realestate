@@ -115,6 +115,7 @@ export default function Search() {
         const data = await res.json();
         if (data.length < 9) {
             setShowMore(false);
+            
         }
         setPropertys([...propertys, ...data]);
     };
