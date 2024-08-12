@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import ListingItem from '../components/ListingItem';
 
 export default function Search() {
     const navigate = useNavigate();
+    const location = useLocation();
     const [sidebardata, setSidebardata] = useState({
         searchTerm: '',
         type: 'all',
@@ -40,9 +41,9 @@ export default function Search() {
             setSidebardata({
                 searchTerm: searchTermFromUrl || '',
                 type: typeFromUrl || 'all',
-                parking: parkingFromUrl === 'true' ? true : false,
-                furnished: furnishedFromUrl === 'true' ? true : false,
-                offer: offerFromUrl === 'true' ? true : false,
+                parking: parkingFromUrl === 'true',
+                furnished: furnishedFromUrl === 'true',
+                offer: offerFromUrl === 'true',
                 sort: sortFromUrl || 'created_at',
                 order: orderFromUrl || 'desc',
             });
@@ -67,36 +68,26 @@ export default function Search() {
     }, [location.search]);
 
     const handleChange = (e) => {
-        if (
-            e.target.id === 'all' ||
-            e.target.id === 'rent' ||
-            e.target.id === 'sale'
-        ) {
-            setSidebardata({ ...sidebardata, type: e.target.id });
+        const { id, type, value, checked } = e.target;
+
+        if (id === 'all' || id === 'rent' || id === 'sale') {
+            setSidebardata({ ...sidebardata, type: id });
         }
 
-        if (e.target.id === 'searchTerm') {
-            setSidebardata({ ...sidebardata, searchTerm: e.target.value });
+        if (id === 'searchTerm') {
+            setSidebardata({ ...sidebardata, searchTerm: value });
         }
 
-        if (
-            e.target.id === 'parking' ||
-            e.target.id === 'furnished' ||
-            e.target.id === 'offer'
-        ) {
+        if (id === 'parking' || id === 'furnished' || id === 'offer') {
             setSidebardata({
                 ...sidebardata,
-                [e.target.id]:
-                    e.target.checked || e.target.checked === 'true' ? true : false,
+                [id]: checked,
             });
         }
 
-        if (e.target.id === 'sort_order') {
-            const sort = e.target.value.split('_')[0] || 'created_at';
-
-            const order = e.target.value.split('_')[1] || 'desc';
-
-            setSidebardata({ ...sidebardata, sort, order });
+        if (id === 'sort_order') {
+            const [sort, order] = value.split('_');
+            setSidebardata({ ...sidebardata, sort: sort || 'created_at', order: order || 'desc' });
         }
     };
 
@@ -127,9 +118,10 @@ export default function Search() {
         }
         setPropertys([...propertys, ...data]);
     };
+
     return (
         <div className='flex flex-col md:flex-row'>
-            <div className='p-7  border-b-2 md:border-r-2 md:min-h-screen'>
+            <div className='p-7 border-b-2 md:border-r-2 md:min-h-screen'>
                 <form onSubmit={handleSubmit} className='flex flex-col gap-8'>
                     <div className='flex items-center gap-2'>
                         <label className='whitespace-nowrap font-semibold'>
@@ -148,18 +140,20 @@ export default function Search() {
                         <label className='font-semibold'>Type:</label>
                         <div className='flex gap-2'>
                             <input
-                                type='checkbox'
+                                type='radio'
                                 id='all'
+                                name='type'
                                 className='w-5'
                                 onChange={handleChange}
                                 checked={sidebardata.type === 'all'}
                             />
-                            <span>Rent & Sale</span>
+                            <span>All</span>
                         </div>
                         <div className='flex gap-2'>
                             <input
-                                type='checkbox'
+                                type='radio'
                                 id='rent'
+                                name='type'
                                 className='w-5'
                                 onChange={handleChange}
                                 checked={sidebardata.type === 'rent'}
@@ -168,8 +162,9 @@ export default function Search() {
                         </div>
                         <div className='flex gap-2'>
                             <input
-                                type='checkbox'
+                                type='radio'
                                 id='sale'
+                                name='type'
                                 className='w-5'
                                 onChange={handleChange}
                                 checked={sidebardata.type === 'sale'}
@@ -219,7 +214,7 @@ export default function Search() {
                             className='border rounded-lg p-3'
                         >
                             <option value='regularPrice_desc'>Price high to low</option>
-                            <option value='regularPrice_asc'>Price low to hight</option>
+                            <option value='regularPrice_asc'>Price low to high</option>
                             <option value='createdAt_desc'>Latest</option>
                             <option value='createdAt_asc'>Oldest</option>
                         </select>
@@ -244,9 +239,8 @@ export default function Search() {
                     )}
 
                     {!loading &&
-                        propertys &&
                         propertys.map((property) => (
-                            <ListingItem key={propertys.id} property={property} />
+                            <ListingItem key={property.id} property={property} />
                         ))}
 
                     {showMore && (
